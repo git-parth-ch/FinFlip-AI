@@ -1,13 +1,15 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { PersonaProvider } from '@/contexts/PersonaContext';
+import { MobileLayout } from '@/components/MobileLayout';
+import { DesktopLayout } from '@/components/DesktopLayout';
 
 const Index = () => {
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <PersonaProvider>
+      {isDesktop ? <DesktopLayout /> : <MobileLayout />}
+    </PersonaProvider>
   );
 };
 
