@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Home, Receipt, PiggyBank, GraduationCap, User, Sparkles, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { PersonaSwitcher } from './PersonaSwitcher';
 import { AIChat } from './AIChat';
@@ -19,26 +20,23 @@ const tabs = [
   { id: 'profile' as TabType, label: 'Profile', icon: User },
 ];
 
+const tabVariants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -10 },
+};
+
+const tabComponents: Record<TabType, React.ReactNode> = {
+  home: <HomeTab />,
+  expenses: <ExpensesTab />,
+  budget: <BudgetTab />,
+  learn: <LearnTab />,
+  profile: <ProfileTab />,
+};
+
 export function DesktopLayout() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [showAIPane, setShowAIPane] = useState(true);
-
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomeTab />;
-      case 'expenses':
-        return <ExpensesTab />;
-      case 'budget':
-        return <BudgetTab />;
-      case 'learn':
-        return <LearnTab />;
-      case 'profile':
-        return <ProfileTab />;
-      default:
-        return <HomeTab />;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -127,7 +125,18 @@ export function DesktopLayout() {
         {/* Content */}
         <main className="px-6 py-6 max-w-5xl mx-auto">
           <div className="max-w-2xl mx-auto">
-            {renderTab()}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                variants={tabVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {tabComponents[activeTab]}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>
