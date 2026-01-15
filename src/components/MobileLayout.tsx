@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Home, Receipt, PiggyBank, GraduationCap, User, Sparkles, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Home, Receipt, PiggyBank, GraduationCap, User, Sparkles } from 'lucide-react';
 import { PersonaSwitcher } from './PersonaSwitcher';
 import { AIChat } from './AIChat';
 import { HomeTab } from './tabs/HomeTab';
@@ -7,7 +8,7 @@ import { ExpensesTab } from './tabs/ExpensesTab';
 import { BudgetTab } from './tabs/BudgetTab';
 import { LearnTab } from './tabs/LearnTab';
 import { ProfileTab } from './tabs/ProfileTab';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 type TabType = 'home' | 'expenses' | 'budget' | 'learn' | 'profile';
 
@@ -19,26 +20,23 @@ const tabs = [
   { id: 'profile' as TabType, label: 'Profile', icon: User },
 ];
 
+const tabVariants = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -20 },
+};
+
+const tabComponents: Record<TabType, React.ReactNode> = {
+  home: <HomeTab />,
+  expenses: <ExpensesTab />,
+  budget: <BudgetTab />,
+  learn: <LearnTab />,
+  profile: <ProfileTab />,
+};
+
 export function MobileLayout() {
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [showAIChat, setShowAIChat] = useState(false);
-
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'home':
-        return <HomeTab />;
-      case 'expenses':
-        return <ExpensesTab />;
-      case 'budget':
-        return <BudgetTab />;
-      case 'learn':
-        return <LearnTab />;
-      case 'profile':
-        return <ProfileTab />;
-      default:
-        return <HomeTab />;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -57,7 +55,18 @@ export function MobileLayout() {
 
       {/* Content */}
       <main className="px-4 py-4 pb-28 overflow-y-auto">
-        {renderTab()}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            variants={tabVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {tabComponents[activeTab]}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Floating AI Button */}
