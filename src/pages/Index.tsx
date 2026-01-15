@@ -1,14 +1,31 @@
+import { useState } from 'react';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { PersonaProvider } from '@/contexts/PersonaContext';
+import { PersonaProvider, usePersona } from '@/contexts/PersonaContext';
 import { MobileLayout } from '@/components/MobileLayout';
 import { DesktopLayout } from '@/components/DesktopLayout';
+import { WelcomeScreen } from '@/components/WelcomeScreen';
+
+function AppContent() {
+  const [hasOnboarded, setHasOnboarded] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+  const { setPersona } = usePersona();
+
+  const handlePersonaSelect = (personaId: string) => {
+    setPersona(personaId);
+    setHasOnboarded(true);
+  };
+
+  if (!hasOnboarded) {
+    return <WelcomeScreen onPersonaSelect={handlePersonaSelect} />;
+  }
+
+  return isDesktop ? <DesktopLayout /> : <MobileLayout />;
+}
 
 const Index = () => {
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-
   return (
     <PersonaProvider>
-      {isDesktop ? <DesktopLayout /> : <MobileLayout />}
+      <AppContent />
     </PersonaProvider>
   );
 };
