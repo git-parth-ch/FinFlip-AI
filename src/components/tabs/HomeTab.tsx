@@ -1,12 +1,16 @@
-import { usePersona } from '@/contexts/PersonaContext';
-import { TrendingDown, Wallet, Target, ArrowRight, Flame } from 'lucide-react';
-import { categories } from '@/data/mockData';
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { ArrowRight, Target, TrendingDown, Wallet, Flame } from 'lucide-react';
 import { FinEdLogo } from '@/components/FinEdLogo';
+import { CelebrationModal } from '@/components/Confetti';
+import { categories } from '@/data/mockData';
+import { usePersona } from '@/contexts/PersonaContext';
+import { useStreak } from '@/contexts/StreakContext';
+import { cn } from '@/lib/utils';
 
 export function HomeTab() {
-  const { currentPersona, transactions, userStats } = usePersona();
+  const { currentPersona, transactions, userStats, userName } = usePersona();
+  const { streakCount, week, bonusXp, celebration, clearCelebration, hasCompletedToday } = useStreak();
 
   const monthlySpending = useMemo(() => {
     return transactions.reduce((sum, t) => sum + t.amount, 0);
@@ -27,10 +31,27 @@ export function HomeTab() {
   const isOverBudget = remaining < 0;
   const spendingPercent = (monthlySpending / currentPersona.monthlyIncome) * 100;
 
+  const displayedXp = userStats.totalXP + bonusXp;
+  const peerTopPercent = useMemo(() => {
+    // Simple deterministic “peer rank” proxy: higher streak => better rank.
+    const base = currentPersona.type === 'student' ? 60 : 55;
+    const improvement = Math.min(40, streakCount * 3 + (hasCompletedToday ? 4 : 0));
+    return Math.max(1, base - improvement);
+  }, [currentPersona.type, streakCount, hasCompletedToday]);
+
   return (
     <div className="space-y-6 animate-fade-in">
+      <CelebrationModal
+        isOpen={!!celebration}
+        onClose={clearCelebration}
+        title={celebration?.title ?? ''}
+        message={celebration?.message ?? ''}
+        xpEarned={celebration?.xpEarned}
+        badge={celebration?.badge}
+      />
+
       {/* Hero Branding Section */}
-      <motion.div 
+      <motion.div
         className="flex flex-col items-center py-6"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -39,41 +60,96 @@ export function HomeTab() {
         <FinEdLogo size="lg" showTagline animate />
       </motion.div>
 
+      {/* Daily Streak (Gamified) */}
+      <motion.div
+        className="glass-card p-4"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.35 }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-streak shadow-md flex items-center justify-center">
+              <Flame className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Daily Streak</p>
+              <p className="text-lg font-bold font-display">{streakCount} Day Streak</p>
+              <p className="text-xs text-muted-foreground">
+                {hasCompletedToday ? 'Done for today' : 'Do 1 action today (validate a transaction or finish a lesson)'}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">XP</p>
+            <p className="text-lg font-bold text-primary">{displayedXp}</p>
+            {bonusXp > 0 && (
+              <p className="text-[11px] text-muted-foreground">Streak bonus: +{bonusXp}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-muted-foreground">Week-at-a-glance</p>
+            <p className="text-xs text-muted-foreground">Global Peer Rank: Top {peerTopPercent}%</p>
+          </div>
+          <div className="flex items-center justify-between">
+            {week.map((d) => (
+              <div key={d.key} className="flex flex-col items-center gap-1">
+                <div
+                  className={cn(
+                    'h-8 w-8 rounded-full border',
+                    d.completed ? 'bg-gradient-streak border-transparent shadow-sm' : 'bg-muted/40 border-border'
+                  )}
+                />
+                <span className="text-[10px] text-muted-foreground">{d.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
       {/* Welcome Card */}
-      <motion.div 
+      <motion.div
         className="spending-card"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.4 }}
       >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary-foreground/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">{currentPersona.avatar}</span>
-            <p className="text-white/80 text-sm">Hey {currentPersona.name}!</p>
+            <p className="text-primary-foreground/80 text-sm">Hello, {userName}!</p>
           </div>
           <h2 className="text-3xl font-bold font-display mb-1">
             {isOverBudget ? '-' : ''}₹{Math.abs(remaining).toLocaleString()}
           </h2>
-          <p className="text-white/70 text-sm">{isOverBudget ? 'over budget' : 'remaining this month'}</p>
-          
+          <p className="text-primary-foreground/70 text-sm">
+            {isOverBudget ? 'over budget' : 'remaining this month'}
+          </p>
+
           <div className="mt-4 flex items-center gap-4">
-            <div className="flex-1 bg-white/20 rounded-full h-2 overflow-hidden">
-              <motion.div 
-                className="h-full bg-white rounded-full"
+            <div className="flex-1 bg-primary-foreground/20 rounded-full h-2 overflow-hidden">
+              <motion.div
+                className="h-full bg-primary-foreground rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(100, spendingPercent)}%` }}
                 transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
               />
             </div>
-            <span className="text-sm font-medium">{spendingPercent.toFixed(0)}% spent</span>
+            <span className="text-sm font-medium text-primary-foreground/90">
+              {spendingPercent.toFixed(0)}% spent
+            </span>
           </div>
         </div>
       </motion.div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 gap-3">
-        <motion.div 
+        <motion.div
           className="glass-card p-4"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -85,7 +161,7 @@ export function HomeTab() {
           </div>
           <p className="text-xl font-bold font-display">₹{currentPersona.monthlyIncome.toLocaleString()}</p>
         </motion.div>
-        <motion.div 
+        <motion.div
           className="glass-card p-4"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -100,7 +176,7 @@ export function HomeTab() {
       </div>
 
       {/* Daily Allowance */}
-      <motion.div 
+      <motion.div
         className="allowance-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -118,36 +194,8 @@ export function HomeTab() {
         </div>
       </motion.div>
 
-      {/* XP & Streak */}
-      <motion.div 
-        className="glass-card p-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45, duration: 0.4 }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="xp-badge">
-              <Flame className="w-3 h-3" />
-              {userStats.streak} day streak
-            </div>
-            <div className="text-sm">
-              <span className="font-bold text-primary">{userStats.totalXP}</span>
-              <span className="text-muted-foreground"> XP</span>
-            </div>
-          </div>
-          <div className="flex gap-1">
-            {userStats.badges.slice(0, 3).map((badge, i) => (
-              <span key={i} className="text-lg animate-badge-pop" style={{ animationDelay: `${i * 100}ms` }}>
-                {badge}
-              </span>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
       {/* Top Spending Categories */}
-      <motion.div 
+      <motion.div
         className="glass-card p-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -164,10 +212,10 @@ export function HomeTab() {
             const category = categories.find((c) => c.id === categoryId);
             if (!category) return null;
             const percent = (amount / monthlySpending) * 100;
-            
+
             return (
-              <motion.div 
-                key={categoryId} 
+              <motion.div
+                key={categoryId}
                 className="flex items-center gap-3"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -182,7 +230,7 @@ export function HomeTab() {
                     <p className="text-sm font-bold">₹{amount.toLocaleString()}</p>
                   </div>
                   <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                    <motion.div 
+                    <motion.div
                       className={`h-full ${category.color} rounded-full`}
                       initial={{ width: 0 }}
                       animate={{ width: `${percent}%` }}
@@ -198,3 +246,4 @@ export function HomeTab() {
     </div>
   );
 }
+

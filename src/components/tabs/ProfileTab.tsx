@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Legend } from '
 import { Download, FileText, Share2, Settings, HelpCircle, LogOut, Users } from 'lucide-react';
 
 export function ProfileTab() {
-  const { currentPersona, userStats, peerBenchmarks } = usePersona();
+  const { currentPersona, userStats, peerBenchmarks, userName } = usePersona();
 
   const chartData = peerBenchmarks.map(b => ({
     name: b.category,
@@ -24,7 +24,7 @@ export function ProfileTab() {
         <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-primary flex items-center justify-center text-4xl mb-4">
           {currentPersona.avatar}
         </div>
-        <h2 className="text-xl font-bold font-display">{currentPersona.name}</h2>
+        <h2 className="text-xl font-bold font-display">{userName}</h2>
         <p className="text-sm text-muted-foreground">{currentPersona.description}</p>
         <div className="flex items-center justify-center gap-4 mt-4">
           <div className="text-center">
@@ -54,9 +54,9 @@ export function ProfileTab() {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" barCategoryGap={8}>
               <XAxis type="number" hide />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
+              <YAxis
+                type="category"
+                dataKey="name"
                 width={80}
                 tick={{ fontSize: 12 }}
                 axisLine={false}
@@ -64,7 +64,7 @@ export function ProfileTab() {
               />
               <Bar dataKey="You" radius={[0, 4, 4, 0]} fill="hsl(240, 55%, 50%)" />
               <Bar dataKey="Peers" radius={[0, 4, 4, 0]} fill="hsl(175, 55%, 45%)" />
-              <Legend 
+              <Legend
                 wrapperStyle={{ paddingTop: 8 }}
                 formatter={(value) => <span className="text-xs">{value}</span>}
               />
@@ -121,3 +121,4 @@ export function ProfileTab() {
     </div>
   );
 }
+

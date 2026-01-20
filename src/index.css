@@ -68,6 +68,7 @@
     --gradient-secondary: linear-gradient(135deg, hsl(175 55% 45%), hsl(175 55% 55%));
     --gradient-accent: linear-gradient(135deg, hsl(15 85% 60%), hsl(25 85% 65%));
     --gradient-hero: linear-gradient(135deg, hsl(240 55% 50%), hsl(175 55% 45%));
+    --gradient-streak: linear-gradient(135deg, hsl(var(--warning)), hsl(var(--destructive)));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 20% 98%));
     --gradient-glass: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
 
@@ -163,6 +164,10 @@
 
   .bg-gradient-hero {
     background: var(--gradient-hero);
+  }
+
+  .bg-gradient-streak {
+    background: var(--gradient-streak);
   }
 
   /* Category Pills */
