@@ -1,7 +1,9 @@
 import { usePersona } from '@/contexts/PersonaContext';
-import { TrendingUp, TrendingDown, Wallet, Target, ArrowRight, Flame } from 'lucide-react';
+import { TrendingDown, Wallet, Target, ArrowRight, Flame } from 'lucide-react';
 import { categories } from '@/data/mockData';
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { FinEdLogo } from '@/components/FinEdLogo';
 
 export function HomeTab() {
   const { currentPersona, transactions, userStats } = usePersona();
@@ -27,8 +29,23 @@ export function HomeTab() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Hero Branding Section */}
+      <motion.div 
+        className="flex flex-col items-center py-6"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <FinEdLogo size="lg" showTagline animate />
+      </motion.div>
+
       {/* Welcome Card */}
-      <div className="spending-card">
+      <motion.div 
+        className="spending-card"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+      >
         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-1">
@@ -42,36 +59,53 @@ export function HomeTab() {
           
           <div className="mt-4 flex items-center gap-4">
             <div className="flex-1 bg-white/20 rounded-full h-2 overflow-hidden">
-              <div 
-                className="h-full bg-white rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(100, spendingPercent)}%` }}
+              <motion.div 
+                className="h-full bg-white rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, spendingPercent)}%` }}
+                transition={{ delay: 0.5, duration: 0.8, ease: 'easeOut' }}
               />
             </div>
             <span className="text-sm font-medium">{spendingPercent.toFixed(0)}% spent</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="glass-card p-4">
+        <motion.div 
+          className="glass-card p-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.4 }}
+        >
           <div className="flex items-center gap-2 text-success mb-2">
             <Wallet className="w-4 h-4" />
             <span className="text-xs font-medium">Income</span>
           </div>
           <p className="text-xl font-bold font-display">₹{currentPersona.monthlyIncome.toLocaleString()}</p>
-        </div>
-        <div className="glass-card p-4">
+        </motion.div>
+        <motion.div 
+          className="glass-card p-4"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.35, duration: 0.4 }}
+        >
           <div className="flex items-center gap-2 text-accent mb-2">
             <TrendingDown className="w-4 h-4" />
             <span className="text-xs font-medium">Spent</span>
           </div>
           <p className="text-xl font-bold font-display">₹{monthlySpending.toLocaleString()}</p>
-        </div>
+        </motion.div>
       </div>
 
       {/* Daily Allowance */}
-      <div className="allowance-card">
+      <motion.div 
+        className="allowance-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.4 }}
+      >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Daily Spending Allowance</p>
@@ -82,10 +116,15 @@ export function HomeTab() {
             <Target className="w-8 h-8 text-secondary" />
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* XP & Streak */}
-      <div className="glass-card p-4">
+      <motion.div 
+        className="glass-card p-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45, duration: 0.4 }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="xp-badge">
@@ -105,10 +144,15 @@ export function HomeTab() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Top Spending Categories */}
-      <div className="glass-card p-4">
+      <motion.div 
+        className="glass-card p-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+      >
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold">Top Spending</h3>
           <button className="text-sm text-primary flex items-center gap-1 hover:underline">
@@ -116,13 +160,19 @@ export function HomeTab() {
           </button>
         </div>
         <div className="space-y-3">
-          {spendingByCategory.map(([categoryId, amount]) => {
+          {spendingByCategory.map(([categoryId, amount], index) => {
             const category = categories.find((c) => c.id === categoryId);
             if (!category) return null;
             const percent = (amount / monthlySpending) * 100;
             
             return (
-              <div key={categoryId} className="flex items-center gap-3">
+              <motion.div 
+                key={categoryId} 
+                className="flex items-center gap-3"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + index * 0.1, duration: 0.3 }}
+              >
                 <div className={`w-10 h-10 rounded-xl ${category.color} flex items-center justify-center text-lg`}>
                   {category.icon}
                 </div>
@@ -132,17 +182,19 @@ export function HomeTab() {
                     <p className="text-sm font-bold">₹{amount.toLocaleString()}</p>
                   </div>
                   <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                    <div 
-                      className={`h-full ${category.color} rounded-full transition-all duration-500`}
-                      style={{ width: `${percent}%` }}
+                    <motion.div 
+                      className={`h-full ${category.color} rounded-full`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percent}%` }}
+                      transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
                     />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

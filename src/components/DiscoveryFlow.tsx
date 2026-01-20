@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
+import { FinEdLogo } from '@/components/FinEdLogo';
 
 interface DiscoveryFlowProps {
   onComplete: (data: DiscoveryData) => void;
@@ -266,11 +267,8 @@ export function DiscoveryFlow({ onComplete }: DiscoveryFlowProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center mb-6"
               >
-                <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-glow">
-                  <span className="text-2xl">💰</span>
-                </div>
-                <h1 className="text-2xl font-bold text-foreground">FinEd AI</h1>
-                <p className="text-sm text-muted-foreground">Let's get to know you</p>
+                <FinEdLogo size="md" showTagline={false} animate />
+                <p className="text-sm text-muted-foreground mt-3">Let's get to know you</p>
               </motion.div>
 
               {/* Form Fields */}
