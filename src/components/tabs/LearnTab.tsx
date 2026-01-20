@@ -1,4 +1,5 @@
 import { usePersona } from '@/contexts/PersonaContext';
+import { useStreak } from '@/contexts/StreakContext';
 import { learningModules, Lesson } from '@/data/mockData';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +9,7 @@ import { CelebrationModal } from '@/components/Confetti';
 
 export function LearnTab() {
   const { userStats } = usePersona();
+  const { markDailyActivity, bonusXp } = useStreak();
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
   const [celebration, setCelebration] = useState<{
@@ -29,15 +31,16 @@ export function LearnTab() {
 
   const handleLessonComplete = (lesson: Lesson, module: typeof learningModules[0]) => {
     if (lesson.completed || completedLessons.has(lesson.id)) return;
-    
+
     const newCompleted = new Set(completedLessons);
     newCompleted.add(lesson.id);
     setCompletedLessons(newCompleted);
 
+    // Streak trigger: finishing one bite-sized lesson completes today.
+    markDailyActivity('learning');
+
     // Check if this completes the module
-    const allLessonsCompleted = module.lessons.every(
-      (l) => l.completed || newCompleted.has(l.id)
-    );
+    const allLessonsCompleted = module.lessons.every((l) => l.completed || newCompleted.has(l.id));
 
     if (allLessonsCompleted) {
       setCelebration({
@@ -62,6 +65,8 @@ export function LearnTab() {
     return module.lessons.findIndex((l) => !isLessonCompleted(l.id, l.completed));
   };
 
+  const displayedXp = userStats.totalXP + bonusXp + completedLessons.size * 100;
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Celebration Modal */}
@@ -75,7 +80,7 @@ export function LearnTab() {
       />
 
       {/* XP Header */}
-      <motion.div 
+      <motion.div
         className="glass-card p-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -84,22 +89,19 @@ export function LearnTab() {
           <div>
             <p className="text-sm text-muted-foreground">Your Progress</p>
             <div className="flex items-baseline gap-2">
-              <motion.p 
+              <motion.p
                 className="text-3xl font-bold font-display text-primary"
-                key={userStats.totalXP + completedLessons.size * 100}
+                key={displayedXp}
                 initial={{ scale: 1.2 }}
                 animate={{ scale: 1 }}
               >
-                {userStats.totalXP + completedLessons.size * 100}
+                {displayedXp}
               </motion.p>
               <span className="text-muted-foreground text-sm">XP</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <motion.div 
-              className="xp-badge"
-              whileHover={{ scale: 1.05 }}
-            >
+            <motion.div className="xp-badge" whileHover={{ scale: 1.05 }}>
               <Flame className="w-3 h-3" />
               {userStats.streak} days
             </motion.div>
@@ -109,7 +111,7 @@ export function LearnTab() {
             </div>
           </div>
         </div>
-        
+
         {/* XP Progress to next level */}
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-muted-foreground">
@@ -122,6 +124,7 @@ export function LearnTab() {
           </p>
         </div>
       </motion.div>
+
 
       {/* Badges */}
       <motion.div 

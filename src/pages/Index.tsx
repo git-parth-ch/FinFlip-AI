@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { PersonaProvider, usePersona } from '@/contexts/PersonaContext';
+import { StreakProvider } from '@/contexts/StreakContext';
 import { MobileLayout } from '@/components/MobileLayout';
 import { DesktopLayout } from '@/components/DesktopLayout';
 import { DiscoveryFlow, DiscoveryData } from '@/components/DiscoveryFlow';
@@ -13,12 +14,13 @@ function AppContent() {
   const [stage, setStage] = useState<OnboardingStage>('discovery');
   const [discoveryData, setDiscoveryData] = useState<DiscoveryData | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
-  const { setPersona } = usePersona();
+  const { setPersona, setUserName } = usePersona();
 
   const handleDiscoveryComplete = (data: DiscoveryData) => {
     setDiscoveryData(data);
+    setUserName(data.fullName || 'User');
     setPersona(data.personaId);
-    
+
     // If bank/SMS already linked in discovery, skip to dashboard
     if (data.bankLinked || data.smsEnabled) {
       setStage('dashboard');
@@ -45,7 +47,7 @@ function AppContent() {
           <DiscoveryFlow onComplete={handleDiscoveryComplete} />
         </motion.div>
       )}
-      
+
       {stage === 'onboarding' && discoveryData && (
         <motion.div
           key="onboarding"
@@ -54,13 +56,10 @@ function AppContent() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <OnboardingFlow 
-            personaId={discoveryData.personaId} 
-            onComplete={handleOnboardingComplete} 
-          />
+          <OnboardingFlow personaId={discoveryData.personaId} onComplete={handleOnboardingComplete} />
         </motion.div>
       )}
-      
+
       {stage === 'dashboard' && (
         <motion.div
           key="dashboard"
@@ -79,9 +78,12 @@ function AppContent() {
 const Index = () => {
   return (
     <PersonaProvider>
-      <AppContent />
+      <StreakProvider>
+        <AppContent />
+      </StreakProvider>
     </PersonaProvider>
   );
 };
 
 export default Index;
+

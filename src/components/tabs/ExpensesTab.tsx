@@ -1,18 +1,22 @@
-import { usePersona } from '@/contexts/PersonaContext';
-import { categories } from '@/data/mockData';
 import { useMemo, useState } from 'react';
-import { Calendar, Filter, Search } from 'lucide-react';
+import { usePersona } from '@/contexts/PersonaContext';
+import { useStreak } from '@/contexts/StreakContext';
+import { categories } from '@/data/mockData';
+import { Calendar, Filter, Search, CheckCircle2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { format, isToday, isYesterday, isThisWeek } from 'date-fns';
 
 export function ExpensesTab() {
   const { transactions } = usePersona();
+  const { markDailyActivity } = useStreak();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [validated, setValidated] = useState<Set<string>>(new Set());
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((t) => {
-      const matchesSearch = t.merchant.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      const matchesSearch =
+        t.merchant.toLowerCase().includes(searchQuery.toLowerCase()) ||
         t.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = !selectedCategory || t.category === selectedCategory;
       return matchesSearch && matchesCategory;
@@ -32,14 +36,26 @@ export function ExpensesTab() {
       } else {
         key = format(t.date, 'MMMM d');
       }
-      
+
       if (!groups[key]) groups[key] = [];
       groups[key].push(t);
     });
     return groups;
-  }, [filteredTransactions]);
+  }, [filteredTransactions, transactions]);
 
   const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+
+  const handleValidate = (transactionId: string) => {
+    setValidated((prev) => {
+      if (prev.has(transactionId)) return prev;
+      const next = new Set(prev);
+      next.add(transactionId);
+      return next;
+    });
+
+    // Streak trigger: validating an automated transaction completes today.
+    markDailyActivity('transaction');
+  };
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -74,9 +90,7 @@ export function ExpensesTab() {
         <button
           onClick={() => setSelectedCategory(null)}
           className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-            !selectedCategory 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            !selectedCategory ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'
           }`}
         >
           All
@@ -86,9 +100,7 @@ export function ExpensesTab() {
             key={cat.id}
             onClick={() => setSelectedCategory(cat.id === selectedCategory ? null : cat.id)}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1.5 transition-all ${
-              selectedCategory === cat.id
-                ? `${cat.color}`
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              selectedCategory === cat.id ? `${cat.color}` : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
             <span>{cat.icon}</span>
@@ -108,24 +120,34 @@ export function ExpensesTab() {
             <div className="space-y-2">
               {txns.map((transaction) => {
                 const category = categories.find((c) => c.id === transaction.category);
-                
+                const isValidated = validated.has(transaction.id);
+
                 return (
-                  <div
+                  <button
+                    type="button"
                     key={transaction.id}
-                    className="glass-card p-3 flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleValidate(transaction.id)}
+                    className={`w-full text-left glass-card p-3 flex items-center gap-3 hover:shadow-md transition-shadow cursor-pointer ${
+                      isValidated ? 'ring-1 ring-warning/30' : ''
+                    }`}
                   >
-                    <div className={`w-10 h-10 rounded-xl ${category?.color || 'bg-muted'} flex items-center justify-center text-lg`}>
+                    <div
+                      className={`w-10 h-10 rounded-xl ${category?.color || 'bg-muted'} flex items-center justify-center text-lg`}
+                    >
                       {category?.icon || '📦'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{transaction.merchant}</p>
+                      <p className="font-medium text-sm truncate flex items-center gap-2">
+                        <span className="truncate">{transaction.merchant}</span>
+                        {isValidated && <CheckCircle2 className="w-4 h-4 text-warning" />}
+                      </p>
                       <p className="text-xs text-muted-foreground truncate">{transaction.description}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-sm">-₹{transaction.amount.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">{format(transaction.date, 'h:mm a')}</p>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -135,3 +157,4 @@ export function ExpensesTab() {
     </div>
   );
 }
+
