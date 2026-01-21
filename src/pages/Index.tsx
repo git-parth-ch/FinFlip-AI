@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { PersonaProvider, usePersona } from '@/contexts/PersonaContext';
@@ -7,14 +7,19 @@ import { MobileLayout } from '@/components/MobileLayout';
 import { DesktopLayout } from '@/components/DesktopLayout';
 import { DiscoveryFlow, DiscoveryData } from '@/components/DiscoveryFlow';
 import { OnboardingFlow } from '@/components/OnboardingFlow';
+import { SplashAnimation } from '@/components/SplashAnimation';
 
-type OnboardingStage = 'discovery' | 'onboarding' | 'dashboard';
+type AppStage = 'splash' | 'discovery' | 'onboarding' | 'dashboard';
 
 function AppContent() {
-  const [stage, setStage] = useState<OnboardingStage>('discovery');
+  const [stage, setStage] = useState<AppStage>('splash');
   const [discoveryData, setDiscoveryData] = useState<DiscoveryData | null>(null);
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const { setPersona, setUserName } = usePersona();
+
+  const handleSplashComplete = useCallback(() => {
+    setStage('discovery');
+  }, []);
 
   const handleDiscoveryComplete = (data: DiscoveryData) => {
     setDiscoveryData(data);
@@ -36,6 +41,10 @@ function AppContent() {
 
   return (
     <AnimatePresence mode="wait">
+      {stage === 'splash' && (
+        <SplashAnimation key="splash" onComplete={handleSplashComplete} />
+      )}
+
       {stage === 'discovery' && (
         <motion.div
           key="discovery"
