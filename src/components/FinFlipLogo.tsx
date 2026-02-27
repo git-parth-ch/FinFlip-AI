@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-interface FinEdLogoProps {
+interface FinFlipLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showTagline?: boolean;
   animate?: boolean;
@@ -13,7 +13,7 @@ const sizeMap = {
   xl: { logo: 96, text: 'text-3xl' },
 };
 
-export function FinEdLogo({ size = 'md', showTagline = false, animate = true }: FinEdLogoProps) {
+export function FinFlipLogo({ size = 'md', showTagline = false, animate = true }: FinFlipLogoProps) {
   const { logo: logoSize, text: textSize } = sizeMap[size];
 
   const LogoSvg = (
@@ -108,10 +108,7 @@ export function FinEdLogo({ size = 'md', showTagline = false, animate = true }: 
         className="flex items-baseline gap-1"
       >
         <span className={`font-display font-bold ${textSize} bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent`}>
-          FinEd
-        </span>
-        <span className={`font-display font-light ${textSize} text-muted-foreground`}>
-          AI
+          FinFlip
         </span>
       </motion.div>
 

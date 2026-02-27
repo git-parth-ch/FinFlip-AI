@@ -33,12 +33,12 @@ const PersonaContext = createContext<PersonaContextType | undefined>(undefined);
 
 function getStoredPersonaId() {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem('fined_personaId');
+  return window.localStorage.getItem('finflip_personaId');
 }
 
 function getStoredUserName() {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem('fined_userName');
+  return window.localStorage.getItem('finflip_userName');
 }
 
 export function PersonaProvider({ children }: { children: ReactNode }) {
@@ -55,7 +55,7 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    window.localStorage.setItem('fined_userName', userName);
+    window.localStorage.setItem('finflip_userName', userName);
   }, [userName]);
 
   const setUserName = (name: string) => {
@@ -68,7 +68,7 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
     setChatMessages(getInitialMessages(persona));
 
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('fined_personaId', persona.id);
+      window.localStorage.setItem('finflip_personaId', persona.id);
     }
   };
 
