@@ -188,10 +188,7 @@ function LogoReveal({ show }: { show: boolean }) {
             transition={{ delay: 0.3, duration: 0.4, ease: 'easeOut' }}
           >
             <span className="font-display font-bold text-3xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              FinEd
-            </span>
-            <span className="font-display font-light text-3xl text-muted-foreground">
-              AI
+              FinFlip
             </span>
           </motion.div>
         </motion.div>

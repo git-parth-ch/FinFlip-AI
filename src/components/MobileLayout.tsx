@@ -47,7 +47,7 @@ export function MobileLayout() {
             <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <span className="font-display font-bold text-lg">FinEd</span>
+            <span className="font-display font-bold text-lg">FinFlip</span>
           </div>
           <PersonaSwitcher />
         </div>

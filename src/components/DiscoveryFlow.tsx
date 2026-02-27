@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { FinEdLogo } from '@/components/FinEdLogo';
+import { FinFlipLogo } from '@/components/FinFlipLogo';
 
 interface DiscoveryFlowProps {
   onComplete: (data: DiscoveryData) => void;
@@ -267,7 +267,7 @@ export function DiscoveryFlow({ onComplete }: DiscoveryFlowProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center mb-6"
               >
-                <FinEdLogo size="md" showTagline={false} animate />
+                <FinFlipLogo size="md" showTagline={false} animate />
                 <p className="text-sm text-muted-foreground mt-3">Let's get to know you</p>
               </motion.div>
 
@@ -619,7 +619,7 @@ export function DiscoveryFlow({ onComplete }: DiscoveryFlowProps) {
                       <div className="space-y-2 text-sm">
                         <p className="text-muted-foreground flex items-start gap-2">
                           <CheckCircle className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                          <span>FinEd AI will <strong>only see transaction data</strong>. We cannot move your money.</span>
+                          <span>FinFlip will <strong>only see transaction data</strong>. We cannot move your money.</span>
                         </p>
                         <p className="text-muted-foreground flex items-start gap-2">
                           <CheckCircle className="w-4 h-4 text-success shrink-0 mt-0.5" />

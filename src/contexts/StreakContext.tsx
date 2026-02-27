@@ -26,7 +26,7 @@ interface StreakContextType {
   markDailyActivity: (type: ActivityType) => void;
 }
 
-const STORAGE_KEY = 'fined_streak_state_v1';
+const STORAGE_KEY = 'finflip_streak_state_v1';
 
 const StreakContext = createContext<StreakContextType | undefined>(undefined);
 

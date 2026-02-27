@@ -56,7 +56,7 @@ export function AIChat({ isFullScreen = false }: { isFullScreen?: boolean }) {
           <Sparkles className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-semibold">FinEd Assistant</h3>
+          <h3 className="font-semibold">FinFlip Assistant</h3>
           <p className="text-xs text-white/80">Your financial buddy</p>
         </div>
       </div>

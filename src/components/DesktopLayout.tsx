@@ -53,7 +53,7 @@ export function DesktopLayout() {
                 <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
-                <span className="font-display font-bold">FinEd Assistant</span>
+                <span className="font-display font-bold">FinFlip Assistant</span>
               </div>
               <Button 
                 variant="ghost" 
@@ -93,7 +93,7 @@ export function DesktopLayout() {
                   <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
-                  <span className="font-display font-bold text-lg">FinEd</span>
+                  <span className="font-display font-bold text-lg">FinFlip</span>
                 </div>
               )}
               <nav className="flex items-center gap-1 bg-muted/50 rounded-xl p-1">

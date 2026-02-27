@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Target, TrendingDown, Wallet, Flame } from 'lucide-react';
-import { FinEdLogo } from '@/components/FinEdLogo';
+import { FinFlipLogo } from '@/components/FinFlipLogo';
 import { CelebrationModal } from '@/components/Confetti';
 import { categories } from '@/data/mockData';
 import { usePersona } from '@/contexts/PersonaContext';
@@ -57,7 +57,7 @@ export function HomeTab() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <FinEdLogo size="lg" showTagline animate />
+        <FinFlipLogo size="lg" showTagline animate />
       </motion.div>
 
       {/* Daily Streak (Gamified) */}

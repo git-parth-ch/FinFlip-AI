@@ -289,7 +289,7 @@ export const getInitialMessages = (persona: Persona): ChatMessage[] => {
     {
       id: '1',
       role: 'assistant',
-      content: `Hey ${persona.name}! 👋 Main hoon aapka FinEd buddy. I've been analyzing your spending patterns, and I noticed something interesting...`,
+      content: `Hey ${persona.name}! 👋 Main hoon aapka FinFlip buddy. I've been analyzing your spending patterns, and I noticed something interesting...`,
       timestamp: new Date(),
     },
     {
